@@ -1,6 +1,6 @@
 # 前言
 
-Spark是一个开源的通用分布式计算框架，支持海量离线数据处理、实时计算、机器学习、图计算，结合大数据场景，在各个领域都有广泛的应用。Spark支持多种开发语言，包括Python、Java、Scala、R，上手容易。其中，Python因为入门简单、开发效率高（人生苦短，我用Python），广受大数据工程师喜欢，本文主要探讨Pyspark的工作原理。
+Spark是一个开源的通用分布式计算框架，支持海量离线数据处理、实时计算、机器学习、图计算，结合大数据场景，在各个领域都有广泛的应用。Spark支持多种开发语言，包括Python、Java、Scala、R，上手容易。其中，Python因为入门简单、开发效率高（人生苦短，我用Python），广受大数据工程师喜欢，本文主要探讨PySpark的工作原理。
 
 
 # 环境准备
@@ -11,14 +11,14 @@ Spark是一个开源的通用分布式计算框架，支持海量离线数据处
 
 首先下载安装Anaconda，[https://www.anaconda.com/distribution/#download-section](https://www.jetbrains.com/idea/download/#section=mac)，选择Python 3.7。
 
-Anaconda安装完之后，开一个终端，执行如下命令安装Pyspark和Openjdk，然后启动Jupyterlab。
+Anaconda安装完之后，开一个终端，执行如下命令安装PySpark和Openjdk，然后启动Jupyterlab。
 
 - 创建一个虚拟Python环境，名字是test，避免影响Anaconda原始环境
 ```
 % conda create --clone base -n test
 % source activate test
 ```
-- 安装Pyspark和Openjdk
+- 安装PySpark和Openjdk
 ```
 % conda install pyspark=2.4.4
 % conda install openjdk
@@ -45,11 +45,11 @@ Spark本身是用Scala、Java、Python开发的，建议安装IntelliJ IDEA ([ht
 代码下载完之后，打开IEDA，选择New->Project from existing sources，新建一个项目，IDEA会扫描整个项目、下载依赖，完成之后就可以阅读代码了。
 
 
-# 深入Pyspark
+# 深入PySpark
 
-## Pyspark用法
+## PySpark用法
 
-在学习Pyspark的工作原理之前，我们先看看Pyspark是怎么用的，先看一段代码。代码很简单，首先创建spark session，然后从csv文件创建dataframe，最后通过rdd的map算子转换数据形式。中间利用了自定义函数test来转换输入数据，test函数的输入数据是一行数据。
+在学习PySpark的工作原理之前，我们先看看PySpark是怎么用的，先看一段代码。代码很简单，首先创建spark session，然后从csv文件创建dataframe，最后通过rdd的map算子转换数据形式。中间利用了自定义函数test来转换输入数据，test函数的输入数据是一行数据。
 ```
 from pyspark.sql import SparkSession
 from pyspark.sql import Row
@@ -308,7 +308,7 @@ PythonRDD.runJob调用了SparkContext.runJob，再来看看这个runJob的定义
   }
 ```
 
-最后我们看一下，在什么地方会用到上面定义的Python函数func。还记得之前给的Pyspark的进程父子关系，其中06750 haiqiangli python -m pyspark.daemon这个进程是Spark java的子进程，我们来看一下它的实现（pysark/daemon.py）。一开始创建sock，随机分配一个监听端口。然后通过write_int(listen_port, stdout_bin)写标准输出，把自己的监听端口号告诉父进程。接着通过epoll的方式监听连接，一旦有连接就会创建一个子进程来处理这个连接的请求，为了提高性能。
+最后我们看一下，在什么地方会用到上面定义的Python函数func。还记得之前给的PySpark的进程父子关系，其中06750 haiqiangli python -m pyspark.daemon这个进程是Spark java的子进程，我们来看一下它的实现（pysark/daemon.py）。一开始创建sock，随机分配一个监听端口。然后通过write_int(listen_port, stdout_bin)写标准输出，把自己的监听端口号告诉父进程。接着通过epoll的方式监听连接，一旦有连接就会创建一个子进程来处理这个连接的请求，为了提高性能。
 ```
 def manager():
     # Create a new process group to corral our children
