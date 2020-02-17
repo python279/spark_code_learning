@@ -20,17 +20,18 @@
 
 ## /path/to/spark-submit python_file.py
 
-```
-graph TD
-A(1 shell: spark-submit)-->B(2 shell: spark-class org.apache.spark.deploy.SparkSubmit python_file.py)
-B-->C(3 jvm: org.apache.spark.launcher.Main org.apache.spark.deploy.SparkSubmit python_file.py)
-C-->D(4 scala: org.apache.spark.launcher.Main)
-D-->E(5 jvm: org.apache.spark.deploy.SparkSubmit python_file.py)
-E-->F(6 scala: org.apache.spark.deploy.SparkSubmit)
-F-->G(7 scala: org.apache.spark.deploy.PythonRunner)
-G-->H(8 scala: py4j.GatewayServer.start)
-H-->I(9 scala: start a new process running /path/to/python python_file.py)
-```
+序号 | 代码
+---|---
+1 | shell: spark-submit
+2 | shell: spark-class org.apache.spark.deploy.SparkSubmit python_file.py
+3 | jvm: org.apache.spark.launcher.Main org.apache.spark.deploy.SparkSubmit python_file.py
+4 | scala: org.apache.spark.launcher.Main
+5 | jvm: org.apache.spark.deploy.SparkSubmit python_file.py
+6 | scala: org.apache.spark.deploy.SparkSubmit
+7 | scala: org.apache.spark.deploy.PythonRunner
+8 | scala: py4j.GatewayServer.start
+9 | scala: start a new process running /path/to/python python_file.py
+
 
 1. spark-submit是一个shell脚本
 2. spark-submit调用shell命令spark-class org.apache.spark.deploy.SparkSubmit python_file.py
@@ -198,16 +199,17 @@ object PythonRunner {
 
 ## /path/to/python python_file
 
-```
-graph TD
-A(1 shell: python python_file)-->B(2 python: SparkContext._ensure_initialized)
-B-->C(3 shell: spark-submit pyspark-shell)
-C-->D(4 scala: org.apache.spark.launcher.Main)
-D-->E(5 jvm: org.apache.spark.deploy.SparkSubmit pyspark-shell)
-E-->F(6 scala: org.apache.spark.deploy.SparkSubmit)
-F-->G(7 scala: org.apache.spark.api.python.PythonGatewayServer)
-G-->H(8 scala: py4j.GatewayServer.start)
-```
+序号 | 代码
+---|---
+1 | shell: python python_file
+2 | python: SparkContext._ensure_initialized
+3 | shell: spark-submit pyspark-shell
+4 | scala: org.apache.spark.launcher.Main
+5 | jvm: org.apache.spark.deploy.SparkSubmit pyspark-shell
+6 | scala: org.apache.spark.deploy.SparkSubmit
+7 | scala: org.apache.spark.api.python.PythonGatewayServer
+8 | scala: py4j.GatewayServer.start
+
 
 1. 直接执行python python_file.py
 2. 调用SparkContext._ensure_initialized来初始化Spark Context（第2步），调用launch_gateway创建Spark py4j.GatewayServer实例，其实最终是起一个子进程执行spark-submit pyspark-shell（第3步）
@@ -397,21 +399,22 @@ private[spark] object PythonGatewayServer extends Logging {
 
 ## /path/to/pyspark
 
-```
-graph TD
-A(1 shell: pyspark)-->B(2 shell: spark-submit pyspark-shell-main)
-B-->C(3 shell: spark-class org.apache.spark.deploy.SparkSubmit pyspark-shell-main)
-C-->D(4 jvm: org.apache.spark.launcher.Main org.apache.spark.deploy.SparkSubmit pyspark-shell-main)
-D-->E(5 shell: exec $PYSPARK_PYTHON)
-E-->F(6 python: run $PYTHONSTARTUP<pyspark/python/pyspark/shell.py>)
-F-->G(7 python: SparkContext._ensure_initialized)
-G-->H(8 shell: spark-submit pyspark-shell)
-H-->I(9 scala: org.apache.spark.launcher.Main)
-I-->J(10 jvm: org.apache.spark.deploy.SparkSubmit pyspark-shell)
-J-->K(11 scala: org.apache.spark.deploy.SparkSubmit)
-K-->L(12 scala: org.apache.spark.api.python.PythonGatewayServer)
-L-->M(13 scala: py4j.GatewayServer.start)
-```
+序号 | 代码
+---|---
+1 | shell: pyspark
+2 | shell: spark-submit pyspark-shell-main
+3 | shell: spark-class org.apache.spark.deploy.SparkSubmit pyspark-shell-main
+4 | jvm: org.apache.spark.launcher.Main org.apache.spark.deploy.SparkSubmit pyspark-shell-main
+5 | shell: exec $PYSPARK_PYTHON
+6 | run $PYTHONSTARTUP<pyspark/python/pyspark/shell.py>
+7 | python: SparkContext._ensure_initialized
+8 | shell: spark-submit pyspark-shell
+9 | scala: org.apache.spark.launcher.Main
+10 | jvm: org.apache.spark.deploy.SparkSubmit pyspark-shell
+11 | scala: org.apache.spark.deploy.SparkSubmit
+12 | scala: org.apache.spark.api.python.PythonGatewayServer
+13 | scala: py4j.GatewayServer.start
+
 
 1. pyspark是个shell脚本
 2. 1会调用另外一个shell命令spark-submit pyspark-shell-main
