@@ -113,7 +113,7 @@ done < <(build_command "$@")
 5. 这里buildCommand返回的class是org.apache.spark.deploy.SparkSubmit，参数是python_file.py
 6. 因为SparkSubmit的参数是.py文件，所以选择class org.apache.spark.deploy.PythonRunner
 
-最后看一下PythonRunner的实现，首先创建一个py4j.GatewayServer的线程，用于接收python发起的请求，然后起一个子进程执行用户的python代码python_file.py，python_file.py会通过py4j发起各种Spark操作，就如上篇文章[PySpark工作原理](https://github.com/python279/spark_code_learning/blob/master/pyspark工作原理.md)提到的。
+最后看一下PythonRunner的实现，首先创建一个py4j.GatewayServer的线程，用于接收python发起的请求，然后起一个子进程执行用户的python代码python_file.py，python_file.py会通过py4j发起各种Spark操作，就如上篇文章[PySpark工作原理](https://github.com/python279/spark_code_learning/blob/master/PySpark工作原理.md)提到的。
 ```
 /**
  * A main class used to launch Python applications. It executes python as a
